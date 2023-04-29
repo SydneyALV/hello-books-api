@@ -18,3 +18,18 @@ def handle_books():
     db.session.commit()
 
     return make_response(f"Book {new_book.title} successfully created", 201)
+
+
+@books_bp.route("", methods=["GET"])
+
+def get_all_books():
+    books_response = []
+    books = Book.query.all()
+
+    for book in books:
+        books_response.append({
+            "title": book.title,
+            "description": book.description
+        })
+
+    return jsonify(books_response)
