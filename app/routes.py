@@ -4,6 +4,18 @@ from app.models.book import Book
 
 books_bp = Blueprint("books", __name__, url_prefix="/books")
 
+def validate_book(book_id):
+    try:
+        book_id = int(book_id)
+    except:
+        abort(make_response({"message":f"Book ID: {book_id} is invalid. It must be an integer."}, 400))
+    
+    book = Book.query.get(book_id)    
+    if not book:
+        abort(make_response({"message":f"Book ID: {book_id} was not found."}, 404))
+
+    return book
+
 @books_bp.route("", methods=["POST"])
 
 def handle_books():
@@ -40,18 +52,6 @@ def read_one_book(book_id):
     return book.to_dict()
 
 
-def validate_book(book_id):
-    try:
-        book_id = int(book_id)
-    except:
-        abort(make_response({"message":f"Book ID: {book_id} is invalid. It must be an integer."}, 400))
-    
-    book = Book.query.get(book_id)    
-    if not book:
-        abort(make_response({"message":f"Book ID: {book_id} was not found."}, 404))
-
-    return book
-
 @books_bp.route("/<book_id>", methods=["PUT"])
     
 def update_book(book_id):
@@ -62,7 +62,7 @@ def update_book(book_id):
 
     db.session.commit()
 
-    return make_response(f"Book '{book.title}' has been successfully updated.", 200)
+    return jsonify(f"Book '{book.title}' has been successfully updated."), 200
 
 @books_bp.route("/<book_id>", methods=["DELETE"])
 
@@ -72,4 +72,4 @@ def delete_book(book_id):
     db.session.delete(book)
     db.session.commit()
 
-    return make_response(f"Book '{book.title}' has been successfully deleted.", 200)
+    return jsonify(f"Book '{book.title}' has been successfully deleted."), 200
