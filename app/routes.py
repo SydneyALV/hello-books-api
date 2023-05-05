@@ -22,18 +22,14 @@ def handle_books():
 
 @books_bp.route("", methods=["GET"])
 
-def get_all_books():
-    
-    title_query = request.args.get("title")
-    
+def get_all_books():    
+    title_query = request.args.get("title")   
     if title_query:
         books = Book.query.filter_by(title=title_query)
     else:
         books = Book.query.all()
     
     books_response = []
-
-
     for book in books:
         books_response.append(book.to_dict())
 
@@ -42,10 +38,8 @@ def get_all_books():
 
 @books_bp.route("/<book_id>", methods=["GET"])
 
-def read_one_book(book_id):
-    
-    book = validate_book(book_id)
-    
+def read_one_book(book_id): 
+    book = validate_book(book_id)    
     return book.to_dict()
 
 
@@ -55,8 +49,7 @@ def validate_book(book_id):
     except:
         abort(make_response({"message":f"Book ID: {book_id} is invalid. It must be an integer."}, 400))
     
-    book = Book.query.get(book_id)
-    
+    book = Book.query.get(book_id)    
     if not book:
         abort(make_response({"message":f"Book ID: {book_id} was not found."}, 404))
 
@@ -66,9 +59,7 @@ def validate_book(book_id):
     
 def update_book(book_id):
     book = validate_book(book_id)
-
-    request_body = request.get_json()
-    
+    request_body = request.get_json()    
     book.title = request_body["title"]
     book.description = request_body["description"]
 
